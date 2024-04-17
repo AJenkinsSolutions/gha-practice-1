@@ -1,0 +1,69 @@
+# lint, test deploy
+name: Lint Test Depoly
+on: push
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            # Checkout code run lint script
+            - name: Get code
+              uses: actions/checkout@v3
+            # Install NodeJs
+            - name: Install NodeJs
+              uses: actions/setup-node@v3
+              with:
+                node-version: 18
+            # Install Dependancies
+            # uses ci instead of install, to get the versions of the packages we want. Not the latest
+            - name: Install depenencies
+              run: npm ci
+            # Run lint script
+            - name: Run Lint
+              run: npm run lint
+    test:
+        #Specify we need the lint to complete before test job 
+        needs: lint
+        runs-on: ubuntu-latest
+        steps:
+            - name: Get code
+              uses: actions/checkout@v3
+            - name: Install NodeJs
+              uses: actions/setup-node@v3
+              with:
+                node-version: 18
+            - name: Install depenencies
+              run: npm ci
+            - name: Run tests
+              run: npm test
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Get code
+              uses: actions/checkout@v3
+            - name: Install NodeJs
+              uses: actions/setup-node@v3
+              with:
+                node-version: 18
+            - name: Install depenencies
+              run: npm ci
+            - name: Bulid Project
+              run: npm run build
+    deploy: 
+        needs: [test, lint, build]
+        runs-on: ubuntu-latest
+        steps:
+            - name: Get code
+              uses: actions/checkout@v3
+            - name: Install NodeJs
+              uses: actions/setup-node@v3
+              with:
+                node-version: 18
+            - name: Install depenencies
+              run: npm ci
+            - name: Bulid Project
+              run: npm run build
+            - name: Deploy Project
+              run: echo "Deploying..."
+
+
+
