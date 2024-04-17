@@ -20,21 +20,6 @@ jobs:
             # Run lint script
             - name: Run Lint
               run: npm run lint
-    test:
-        #Specify we need the lint to complete before test job 
-        needs: lint
-        runs-on: ubuntu-latest
-        steps:
-            - name: Get code
-              uses: actions/checkout@v3
-            - name: Install NodeJs
-              uses: actions/setup-node@v3
-              with:
-                node-version: 18
-            - name: Install depenencies
-              run: npm ci
-            - name: Run tests
-              run: npm test
     build:
         runs-on: ubuntu-latest
         steps:
@@ -48,8 +33,23 @@ jobs:
               run: npm ci
             - name: Bulid Project
               run: npm run build
+    test:
+        #Specify we need the lint to complete before test job 
+        runs-on: ubuntu-latest
+        steps:
+            - name: Get code
+              uses: actions/checkout@v3
+            - name: Install NodeJs
+              uses: actions/setup-node@v3
+              with:
+                node-version: 18
+            - name: Install depenencies
+              run: npm ci
+            - name: Run tests
+              run: npm test
+    
     deploy: 
-        needs: [test, lint, build]
+        needs: [lint, build, test]
         runs-on: ubuntu-latest
         steps:
             - name: Get code
